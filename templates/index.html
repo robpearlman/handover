@@ -1,0 +1,27 @@
+{% extends "template.html" %}
+{% block content %}
+{% from "_macro.html" import render_field %}
+
+  <h1>Geriatrics Handover - Select your team</h1>
+      <div class="container"> 
+      <form class="form-inline" action="{{ url_for('index') }}" method="post">
+        {{ form.csrf_token }}
+        <p>
+        <p>
+        {{ render_field(form.teamSelect, with_label=true) }}
+        {{ render_field(form.teamSubmit, with_label=true) }}
+
+        </p>
+        <p><button class="btn btn-sm btn-success" type="submit">Submit</button></p>
+      </form>
+      <hr>
+      <h1>OR</h1>
+      <p><button class="btn btn-sm btn-success" type="submit"><a href="{{ url_for('index') }}">View List</a></button></p>
+
+  </div>
+
+
+  <br>
+  <br>
+  <div>
+{% endblock %}

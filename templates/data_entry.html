@@ -1,0 +1,38 @@
+{% extends "template.html" %}
+{% block content %}
+
+  <h1>Rounds</h1>
+  <div class="add-item">
+    <h3>Import data to your device:</h3>
+      <div class="container"> 
+      <form class="form-inline" action="{{ url_for('submitTeamData', team_id = team_id) }}" method="post">
+        {{ form.csrf_token }}
+        <p>
+        <p>
+        {% if data_Id %}
+        <h3> Your Data Id Is: <b>{{ data_Id }} </b></h3>
+        {% endif %}
+
+        </p>
+        <p>
+        {{ form.patientData(placeholder="patient Data",  cols="80", rows="20") }}
+
+        <span class="error">
+          {% if form.patientData.errors %}
+            {% for error in form.patientData.errors %}
+              {{ error }}
+            {% endfor %}
+          {% endif %}
+        </span>
+
+        </p>
+        <p><button class="btn btn-sm btn-success" type="submit">Submit</button></p>
+      </form>
+  </div>
+  </div>
+
+
+  <br>
+  <br>
+  <div>
+{% endblock %}

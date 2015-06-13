@@ -1,0 +1,2 @@
+		Surname, First Middle	Transit Lounge GOS 01 04	000-48-00	Dr, Who	12 years	06/11/1881	Male	    0.8 Days	Pain, abdominal / POST OP INFECTION
+		Pt1, xx xx	Surgical 3 GOS 06 15	000-01-01	Dr, Who	84 years	12/08/1988	Male	    0.7 Days	Pain, abdominal/ INCATCERATED (R) INGUINOSCROTAL HERNIA
