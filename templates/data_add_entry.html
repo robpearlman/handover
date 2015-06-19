@@ -1,13 +1,13 @@
 {% extends "template.html" %}
 {% block content %}
   <div class="container">
-    <h3>Create or update the list for {{ team.teamName }}</h3>
+    <h3>Add new patients to the list for {{ team.teamName }}</h3>
     <p>Your list needs to have the following columns (the default list setup:)
       <p>Name, Location, MRN, Attending, Age, DOB, Sex, LOS, Visit Reason, Admitted</p>
-      Select all your patients and copy-paste in the below box. <strong>If there is an existing list, existing patients will have their details updated, discharged patients will be removed, and new patients will have records created</strong>
+      Select all your patients and copy-paste in the below box. <strong>This page will not delete existing patients, only add new ones to the selected team</strong>
     </p>
       <div class="container"> 
-      <form class="form-inline" action="{{ url_for('submitTeamData', team_id = team_id) }}" method="post">
+      <form class="form-inline" action="{{ url_for('addNewTeamData', team_id = team_id) }}" method="post">
         {{ form.csrf_token }}
         <p>
         <p>

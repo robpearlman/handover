@@ -2,9 +2,9 @@
 {% block content %}
 {% from "_macro.html" import render_field %}
 
-  <h3>Enter patient details</h3>
+  <h3>Enter patient details for {{ team.teamName }}</h3>
 <br>
-        <form class="form" action="{{ url_for('reviewTeamData', team_id = team_id) }}" method="post">
+        <form class="form" action="{{ url_for('reviewTeamData', team_id = team.id) }}" method="post">
             <table>
                 <tr>
                     <th>Name</th>
@@ -14,9 +14,9 @@
                     <th>Review By</th>
                     <th>Review Reason</th>
                 </tr>
-                {% for patient in form.patients %}
+                {% for patient in form.patients|sort(attribute='reviewBy.data') %}
                 <tr data-toggle="fieldset-entry">
-                    <td>{{ patient.patientName.data }}</td>
+                    <td>{{ patient.patientName.data }}{{ patient.patientName }}</td>
                     <td>{{ patient.background(cols="25", rows="6") }}</td>
                     <td>{{ patient.issues(cols="25", rows="6") }}</td>
                     <td>{{ patient.plan(cols="25", rows="6") }}</td>
@@ -25,7 +25,7 @@
                 </tr>
                 {% endfor %}
             </table>
-        <p><button class="btn btn-sm btn-success" type="submit">Submit</button></p>
+        <p><p><input class="button-primary" type="submit" value="Submit"></p></p>
       </form>
 
 {% endblock %}

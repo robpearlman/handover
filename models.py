@@ -9,7 +9,7 @@ class TeamsTable(db.Model):
     __tablename__ = "teamsTable"
     id = db.Column(db.Integer, primary_key=True)
     teamName = db.Column(db.String, nullable=False)
-    patients = db.relationship('DataTable', backref = db.backref('team')) # many to one
+    patients = db.relationship('DataTable', backref = db.backref('team'), order_by='DataTable.patientName') # many to one
 
     def __init__(self, teamName):
         self.teamName = teamName
@@ -22,14 +22,18 @@ def getTeams():
     teams = TeamsTable.query
     return teams
 
+def getConsultants():
+    consultants = DataTable.query
+    return consultants
+
 class DataTable(db.Model):
     __tablename__ = "dataTable"
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teamsTable.id'))
     patientName = db.Column(db.String, nullable=False)
     mrn = db.Column(db.String, nullable=False)
-    age = db.Column(db.String, nullable=True)
     los = db.Column(db.String, nullable=True)
+    age = db.Column(db.String, nullable=True)
     admissionReason = db.Column(db.String, nullable=True)
     attending = db.Column(db.String, nullable=True)
     location = db.Column(db.String, nullable=True)

@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Nav Bar
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <nav class="navbar">
+      <div class="container">
+        <ul class="navbar-list">
+          <li class="navbar-item"><a class="navbar-link" href="{{ url_for('index') }}">Home</a></li>
+        </ul>
+      </div>
+    </nav>
 
   <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+
   <meta charset="utf-8">
   <title>Gosford Gerries Weekend Handover</title>
   <meta name="description" content="">
@@ -34,7 +46,7 @@
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="container">
-
+    <br>
         {% for message in get_flashed_messages() %}
           <div class="alert alert-dismissable alert-info">{{ message }}</div>
         {% endfor %}

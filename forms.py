@@ -1,8 +1,8 @@
 from flask_wtf import Form
-from wtforms import TextField, TextAreaField, IntegerField, FieldList, FormField, SelectField, HiddenField
+from wtforms import TextField, TextAreaField, FieldList, FormField, SelectField, HiddenField, BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired
-from models import TeamsTable, DataTable, Item, getTeams
+from models import TeamsTable, DataTable, Item, getTeams, getConsultants
 
 ################
 #### forms  ####
@@ -39,8 +39,26 @@ It includes a textbox so that view logic can either add a new team if none exist
     teamSelect = QuerySelectField(u'Team', query_factory=getTeams, get_label='teamName', allow_blank=True, blank_text=(u'Select Team, or enter new team'))
     teamSubmit = TextField('Enter a new team name', default="")
 
+class TeamSelectForm(Form):
+    """docstring for TeamSelectSubmitForm
+This is used in the index view and on index.html. 
+It pulls its data from the query factory getTeams
+It includes a textbox so that view logic can either add a new team if none existing, or select the appropriate team
+    """
+    teamSelect = QuerySelectField(u'Team', query_factory=getTeams, get_label='teamName', allow_blank=False, blank_text=(u'Select Team'))
+
+class ConsultantSelectForm(Form):
+    """docstring for TeamSelectSubmitForm
+This is used in the index view and on index.html. 
+It pulls its data from the query factory getTeams
+It includes a textbox so that view logic can either add a new team if none existing, or select the appropriate team
+    """
+    consultantSelect = QuerySelectField(u'Consultant', query_factory=getConsultants, get_label='attending', allow_blank=False)
+
+
+
 class PatientsForm(Form):
-    patientName = TextField("Patient Name")
+    patientName = HiddenField("Patient Name")
     background = TextAreaField("Background")
     issues = TextAreaField("Issues")
     plan = TextAreaField("Plan")
