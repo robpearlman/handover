@@ -29,7 +29,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-from models import TeamsTable, DataTable, Item, getTeams
+from models import TeamsTable, DataTable, ConsultantsTable
 from forms import TeamSelectSubmitForm, ConsultantSelectForm, TeamSelectForm, ImportData, DisplayDataForm
 
 
@@ -150,12 +150,58 @@ def addNewTeamData(team_id):
         return render_template("data_add_entry.html", form=form, team=team, team_id = team_id) 
 
 
-@app.route('/view_list/')
+@app.route('/view_complete_list/')
 def viewList():
     patients = db.session.query(DataTable) \
         .order_by(DataTable.reviewBy.asc(),DataTable.location.desc()). \
         all()
-    pdf = create_pdf(render_template('pdf_list.html', patients=patients))
+    pdf = create_pdf(render_template('pdf_complete_list.html', patients=patients))
+    response = make_response(pdf.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
+    return response
+
+@app.route('/view_consultant_list/', methods=['GET', 'POST'])
+def redirectConsultantList():
+    # This endpoint should redirect to the review page
+    form = ConsultantSelectForm(request.form)
+    if request.method == 'POST':
+        if form.consultantSelect.data:
+            return redirect(url_for('viewConsultantList', consultant_id = form.consultantSelect.data.id))
+    else:
+        flash('You have not selected a consultant')
+        return redirect(url_for('index'))
+
+@app.route('/view_consultant_list/<int:consultant_id>')
+def viewConsultantList(consultant_id):
+    patients = db.session.query(DataTable) \
+        .filter_by(consultant_id=consultant_id) \
+        .order_by(DataTable.reviewBy.asc(),DataTable.location.desc()). \
+        all()
+    pdf = create_pdf(render_template('pdf_generic_list.html', patients=patients, title = patients[0].consultant.consultant))
+    response = make_response(pdf.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
+    return response
+
+@app.route('/view_team_list/', methods=['GET', 'POST'])
+def redirectTeamList():
+    # This endpoint should redirect to the review page
+    form = TeamSelectForm(request.form)
+    if request.method == 'POST':
+        if form.teamSelect.data:
+            return redirect(url_for('viewTeamList', team_id = form.teamSelect.data.id))
+    else:
+        flash('You have not selected a team')
+        return redirect(url_for('index'))
+
+@app.route('/view_team_list/<int:team_id>')
+def viewTeamList(team_id):
+    patients = db.session.query(DataTable) \
+        .filter_by(team_id=team_id) \
+        .order_by(DataTable.reviewBy.asc(),DataTable.location.desc()). \
+        all()
+    pdf = create_pdf(render_template('pdf_generic_list.html', patients=patients, title = patients[0].team.teamName))
     response = make_response(pdf.getvalue())
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
@@ -176,18 +222,41 @@ def addData(data, team_id, skipDelete):
         print line
         patient = db.session.query(DataTable).filter_by(mrn=line[4]).first()
         if patient:
+
+            consultant = db.session.query(ConsultantsTable).filter_by(consultant=line[5]).first()
+            if consultant:
+                # costs nothing to re-save existing consultant
+                patient.consultant = consultant.id
+            else:
+                # consultant doesn't exist
+                new_consultant = ConsultantsTable(line[5])
+                db.session.add(new_consultant)
+                db.session.commit()
+                patient.consultant = new_consultant.id
+
             # only update details if the patient already exists
             mrnList.append(line[4])
             patient.los = line[9]
-            patient.attending = line[5]
+            # patient.attending = line[5]
             patient.location = line[3]
             patient.team_id = team_id
             print 'updated ' + patient.patientName
         else:
             # if the patient doesn't exist then it will add it
             # Order is(team_id, patientName, mrn, los, age, admissionReason, attending, location)
+            
+            consultant = db.session.query(ConsultantsTable).filter_by(consultant=line[5]).first()
+            if consultant:
+                # costs nothing to re-save existing consultant
+                pass
+            else:
+                # consultant doesn't exist
+                consultant = ConsultantsTable(line[5])
+                db.session.add(consultant)
+                db.session.commit()
+
             mrnList.append(line[4])
-            new_patient = DataTable(team_id, line[2], line[4], line[9], line[6], line[10], line[5], line[3])            
+            new_patient = DataTable(team_id, consultant.id, line[2], line[4], line[9], line[6], line[10], line[3])            
             db.session.add(new_patient)
             db.session.commit()
             print 'added ' + new_patient.patientName

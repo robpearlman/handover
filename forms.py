@@ -2,7 +2,7 @@ from flask_wtf import Form
 from wtforms import TextField, TextAreaField, FieldList, FormField, SelectField, HiddenField, BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired
-from models import TeamsTable, DataTable, Item, getTeams, getConsultants
+from models import TeamsTable, DataTable, ConsultantsTable, getTeams, getConsultants
 
 ################
 #### forms  ####
@@ -53,7 +53,7 @@ This is used in the index view and on index.html.
 It pulls its data from the query factory getTeams
 It includes a textbox so that view logic can either add a new team if none existing, or select the appropriate team
     """
-    consultantSelect = QuerySelectField(u'Consultant', query_factory=getConsultants, get_label='attending', allow_blank=False)
+    consultantSelect = QuerySelectField(u'Consultant', query_factory=getConsultants, get_label='consultant', allow_blank=False)
 
 
 
@@ -62,6 +62,7 @@ class PatientsForm(Form):
     background = TextAreaField("Background")
     issues = TextAreaField("Issues")
     plan = TextAreaField("Plan")
+    jobs = TextAreaField("Jobs")
     reviewBy = SelectField("Review By", choices=[(c, c) for c in ['No Review', 'RMO', 'Registrar', 'Consultant']])
     reviewReason = TextField("Review Reason")
     def __init__(self, csrf_enabled=False, *args, **kwargs):

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body {
+  font-size: 1.0em; /* currently ems cause chrome bug misinterpreting rems on body element */
+  line-height: 1;
+  font-weight: 400;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222; }
+
+@page { size: A4 landscape;
+        margin: 25pt }
+@media print { nav { display: none } }
+
+/* Tables
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+th,
+td {
+  padding: 3px 3px 3px 3px;
+  text-align: left;
+  border-bottom: 1px solid #E1E1E1;
+  border-right: 1px solid #E1E1E1; }
+th:first-child,
+td:first-child {
+  padding: 3px 3px 3px 3px }
+th:last-child,
+td:last-child {
+  padding: 3px 3px 3px 3px }
+</style>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+
+  <meta charset="utf-8">
+  <title>Gosford Gerries Weekend Handover</title>
+  <meta name="description" content="">
+  <meta name="author" content="Rob Pearlman">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– 
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css"> 
+--> 
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+
+
+
+</head>
+<body>
+<h1>List for {{ title }} </h1>
+  <!-- Primary Page Layout
+  http://www.printernational.org/iso-paper-sizes.php
+  there are 823 pt in a landscape A4 page -->
+  <div class="container">
+
+            <table>
+                <tr>
+                    <th style="width:49pt">Location</th>
+                    <th style="width:59pt">Name</th>
+                    <th style="width:49pt">MRN</th>
+                    <th style="width:180pt">Background</th>
+                    <th style="width:70pt">Issues</th>
+                    <th style="width:180pt">Plan</th>
+                    <th style="width:200pt">Jobs</th>
+                </tr>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.location }}</td>
+                    <td>{{ patient.patientName }}</td>
+                    <td>{{ patient.mrn }}</td>
+                    <td>{{ patient.background }}</td>
+                    <td>{{ patient.issues }}</td>
+                    <td>{{ patient.plan }}</td>
+                    <td>{{ patient.jobs }}</td>
+                </tr>
+                {% endfor %}
+            </table>        
+
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
