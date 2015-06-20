@@ -88,7 +88,7 @@ def submitTeamData(team_id):
     if request.method == 'GET':
         return render_template("data_entry.html", form=form, team=team, team_id=team_id)
 
-# <!-- Update the list by adding new patients to the team -->
+# <!-- Update the list by adding new patients to the team. Redirects to 'addNewTeamData'-->
 @app.route('/add_team_data/', methods=['GET', 'POST'])
 def addNewTeamDataFromIndex():
     form = TeamSelectForm(request.form)
@@ -101,10 +101,27 @@ def addNewTeamDataFromIndex():
         flash('You have not selected a team')
         return redirect(url_for('index'))
 
+@app.route('/team_data/add_new/<int:team_id>', methods=['GET', 'POST'])
+def addNewTeamData(team_id):
+    #pdb.set_trace()
+    error = None
+    form = ImportData(request.form)
+    team = db.session.query(TeamsTable).filter_by(id=team_id).first()
+    skipDelete = True
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            addData(form.patientData.data, team_id, skipDelete)
+            flash('data imported and updated')
+            return redirect(url_for('reviewTeamData', team_id = team_id))
+        else:
+            return render_template("data_add_entry.html", form=form, team=team, error=error)
+    if request.method == 'GET':
+        return render_template("data_add_entry.html", form=form, team=team, team_id = team_id) 
+
 # <!-- Edits patient data for a team -->  
 @app.route('/edit_team_data/', methods=['GET', 'POST'])
 def reviewTeamDataFromIndex():
-    # This endpoint should redirect to the review page
+    # This endpoint should redirect to the review page, endpoint 'reviewTeamData'
     form = TeamSelectForm(request.form)
     if request.method == 'POST':
         if form.teamSelect.data:
@@ -132,24 +149,7 @@ def reviewTeamData(team_id):
         form = DisplayDataForm(obj = team)
         return render_template("data_review.html", form = form, team = team)
 
-@app.route('/team_data/add_new/<int:team_id>', methods=['GET', 'POST'])
-def addNewTeamData(team_id):
-    #pdb.set_trace()
-    error = None
-    form = ImportData(request.form)
-    team = db.session.query(TeamsTable).filter_by(id=team_id).first()
-    skipDelete = True
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            addData(form.patientData.data, team_id, skipDelete)
-            flash('data imported and updated')
-            return redirect(url_for('reviewTeamData', team_id = team_id))
-        else:
-            return render_template("data_add_entry.html", form=form, team=team, error=error)
-    if request.method == 'GET':
-        return render_template("data_add_entry.html", form=form, team=team, team_id = team_id) 
-
-
+# <!-- View List Endpoints -->  
 @app.route('/view_complete_list/')
 def viewList():
     patients = db.session.query(DataTable) \
@@ -161,9 +161,10 @@ def viewList():
     response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
     return response
 
+#############
 @app.route('/view_consultant_list/', methods=['GET', 'POST'])
 def redirectConsultantList():
-    # This endpoint should redirect to the review page
+    # This endpoint should redirect to the viewConsultantList page
     form = ConsultantSelectForm(request.form)
     if request.method == 'POST':
         if form.consultantSelect.data:
@@ -183,10 +184,12 @@ def viewConsultantList(consultant_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
     return response
+#############
 
+#############
 @app.route('/view_team_list/', methods=['GET', 'POST'])
 def redirectTeamList():
-    # This endpoint should redirect to the review page
+    # This endpoint should redirect to the viewTeamList page
     form = TeamSelectForm(request.form)
     if request.method == 'POST':
         if form.teamSelect.data:
@@ -206,7 +209,7 @@ def viewTeamList(team_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'yourfilename'
     return response
-
+#############
 
 #################
 #### methods ####
@@ -222,7 +225,10 @@ def addData(data, team_id, skipDelete):
         print line
         patient = db.session.query(DataTable).filter_by(mrn=line[4]).first()
         if patient:
-
+            # The following if consultant and if statement are
+            # ripe for optimisation/moving into their own module
+            # it checks the consultant name and creates a new one if there's nothing
+            # there etc
             consultant = db.session.query(ConsultantsTable).filter_by(consultant=line[5]).first()
             if consultant:
                 # costs nothing to re-save existing consultant
